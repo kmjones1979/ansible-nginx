@@ -205,8 +205,3 @@ To the Contributors:
 - [Jean-Denis Vauguet](https://github.com/chikamichi)
 - [Kevin Jones](https://github.com/kmjones1979)
 
-#### License
-
-Licensed under the MIT License. See the LICENSE file for details.
-
-
