@@ -8,6 +8,8 @@
     group: root
     mode: 0644
 
+# check and update the configuration files
+
 - name: Nginx | Checking for an existing nginx.conf file
   stat:
     path: "{{nginx_dir}}/nginx.conf"
@@ -20,36 +22,20 @@
     owner: root
     group: root
     mode: 0644
-    when: ngx_plus_lb_template == "no"
   notify:
     - restart nginx
 
-- name: Nginx Plus | Updating the nginx.conf file from template
-  template:
-    src: nginx_plus_nginx.conf.j2
-    dest: "{{nginx_dir}}/nginx.conf"
-    owner: root
-    group: root
-    mode: 0644
-    when: ngx_plus_lb_template == "yes"
-  notify:
-    - restart nginx
+# Nginx Plus update used when nginx plus template is requested
 
-- name: Nginx Plus | Updating the conf.d/default.conf file from template
-  template:
-    src: nginx_plus_default.conf.j2
-    dest: "{{nginx_dir}}/conf.d/default.conf"
-    owner: root
-    group: root
-    mode: 0644
-    when: ngx_plus_lb_template == "yes"
-  notify:
-    - restart nginx:
+- include: configure_plus.yml
+  when: ngx_plus_lb_template == "yes"
 
 # rabbit mq install used to demo tcp upstream withing Nginx Plus
 
-- include: rabbitmq.yml
+- include: configure_rabbitmq.yml
   when: rabbitmq_install == "yes"
+
+# start nginx for the first time
 
 - name: Nginx | Starting Nginx for the first time
   service:

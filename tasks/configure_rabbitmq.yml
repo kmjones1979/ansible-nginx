@@ -1,3 +1,5 @@
+# configure_rabbitmq.yml
+ 
   - name: ensure python-software-properties is installed
     apt: pkg=python-software-properties state=installed
 
