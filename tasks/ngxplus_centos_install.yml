@@ -6,27 +6,27 @@
 #		https://www.nginx.com/products/
 #		1-800-915-9122
 
-- name: Creating nginx ssl cert repo directory
+- name: Nginx Plus | Creating Nginx Plus ssl cert repo directory
   file: path=/etc/ssl/nginx state=directory group=root mode=0700
 
-- name: Copy Nginx Plus repository certificate
+- name: Nginx Plus | Copy Nginx Plus repository certificate
   copy: src=/etc/ssl/nginx/nginx-repo.crt dest=/etc/ssl/nginx/nginx-repo.crt owner=root group=root mode=0700
 
-- name: Copy Nginx Plus repository key
+- name: Nginx Plus | Copy Nginx Plus repository key
   copy: src=/etc/ssl/nginx/nginx-repo.key dest=/etc/ssl/nginx/nginx-repo.key owner=root group=root mode=0700
 
-- name: Download Nginx CA certificate
+- name: Nginx Plus | Downloading Nginx Plus CA certificate
   get_url: url=https://cs.nginx.com/static/files/CA.crt dest=/etc/ssl/nginx/CA.crt mode=0700 validate_certs=no
 
-- name: Download yum Nginx repository
+- name: Nginx Plus | Downloading yum Nginx Plus repository
   get_url: url=https://cs.nginx.com/static/files/nginx-plus-7.repo dest=/etc/yum.repos.d/nginx-plus-7.repo mode=0700 validate_certs=no
 
-- name: Install python-pycurl | Make sure the ansible required dependencies are installed
+- name: Nginx Plus | Making sure the ansible required dependencies are installed
   yum:
     name: python-pycurl
     state: present
 
-- name: Nginx Plus | Make sure nginx plus is installed (package)
+- name: Nginx Plus | Installing Nginx Plus
   yum:
     name: nginx-plus
     state: latest

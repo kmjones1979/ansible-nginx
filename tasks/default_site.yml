@@ -1,6 +1,6 @@
-# file: nginx/tasks/default_site.yml
+# default_site.yml
 
-- name: Nginx | Make sure the default site root directory is present
+- name: Nginx | Ensuring the default site root directory is present
   file:
     path: "{{nginx_default_root}}"
     state: directory
@@ -8,12 +8,12 @@
     group: "{{nginx_group}}"
     mode: 0754
 
-- name: Nginx | Check for existing index.html
+- name: Nginx | Checking for existing index.html
   stat:
     path: "{{nginx_default_root}}/index.html"
   register: nginx_default_index
 
-- name: Nginx | Copy placeholder index.html
+- name: Nginx | Copying placeholder index.html
   copy:
     src: "index.html"
     dest: "{{nginx_default_root}}/index.html"
@@ -22,7 +22,7 @@
     mode: 0644
   when: not nginx_default_index.stat.exists
 
-- name: Nginx | Update the default site configuration
+- name: Nginx | Updating the default site configuration
   template:
     src: default.site.j2
     dest: "{{nginx_dir}}/sites-available/default"
@@ -30,7 +30,7 @@
     group: root
     mode: 0644
 
-- name: Nginx | Enable the default site
+- name: Nginx | Enabling the default site
   file:
     path: "{{nginx_dir}}/sites-enabled/default"
     src: "{{nginx_dir}}/sites-available/default"
@@ -39,7 +39,7 @@
   notify:
     - reload nginx
 
-- name: Nginx | Disable the default site
+- name: Nginx | Disabling the default site
   file:
     path: "{{nginx_dir}}/sites-enabled/default"
     state: absent

@@ -6,14 +6,10 @@
       apt:
         pkg: "{{item}}"
         state: present
-      with_items: ["perl", "libperl-dev", "monit", "build-essential"]
+      with_items: ["perl", "libperl-dev", "build-essential"]
     - include: 'tasks/main.yml'
 
   handlers:
-    - name: restart monit
-      service:
-        name: monit
-        state: restarted
     - include: 'handlers/main.yml'
     - name: restart rabbitmq
       service: name=rabbitmq-server state=restarted

@@ -1,15 +1,15 @@
 # file: nginx/tasks/package.yml
 
-- name: Nginx | Make sure the ansible required dependencies are installed
+- name: Nginx | Making sure the ansible required dependencies are installed
   apt:
     pkg: python-pycurl
     state: present
 
-- name: Nginx | Add the nginx repository
+- name: Nginx | Adding the nginx repository
   apt_repository:
     repo: ppa:nginx/stable
 
-- name: Nginx | Make sure nginx is installed (package)
+- name: Nginx | Making sure nginx is installed (package)
   apt:
     pkg: nginx
     state: present

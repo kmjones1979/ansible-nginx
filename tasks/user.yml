@@ -1,17 +1,17 @@
 # file: nginx/tasks/user.yml
 
-- name: Nginx | Make sure the nginx group is present
+- name: Nginx | Making sure the nginx group is present
   group:
     gid: "{{nginx_gid}}"
     name: "{{nginx_group}}"
     state: present
 
-- name: Nginx | Make sure the www directory is present
+- name: Nginx | Making sure the www directory is present
   file:
     path: "{{nginx_www_dir}}"
     state: directory
 
-- name: Nginx | Make sure the nginx user is present
+- name: Nginx | Making sure the nginx user is present
   user:
     name: "{{nginx_user}}"
     uid: "{{nginx_uid}}"
@@ -22,7 +22,7 @@
     state: present
     system: yes
 
-- name: Nginx | Set the right directory permissions for the www directory
+- name: Nginx | Setting the right directory permissions for the www directory
   file:
     path: "{{nginx_www_dir}}"
     owner: "{{nginx_user}}"
@@ -30,13 +30,13 @@
     mode: 0755
     state: directory
 
-- name: Nginx | Check the current password expiry
+- name: Nginx | Checking the current password expiry
   command: grep {{nginx_user}} /etc/shadow
   sudo: yes
   register: nginx_old_password
   changed_when: false
 
-- name: Nginx | Set the right expiration on the nginx user
+- name: Nginx | Setting the right expiration on the nginx user
   shell: "chage -I -1 -E -1 -m -1 -M -1 -W -1 -E -1 {{nginx_user}} && grep {{nginx_user}} /etc/shadow"
   sudo: yes
   register: nginx_new_password
