@@ -1,0 +1,34 @@
+# file: nginx/tasks/commons.yml
+
+- name: Nginx | Make sure the nginx directory exists
+  file:
+    path: "{{nginx_dir}}"
+    owner: nginx
+    group: nginx
+    mode: 0755
+    state: directory
+
+- name: Nginx | Make sure the nginx streams directory exists
+  file:
+    path: "{{nginx_dir}}/stream.d/"
+    owner: nginx
+    group: nginx
+    mode: 0755
+    state: directory
+
+- name: Nginx | Make sure the nginx log directory exists
+  file:
+    path: "{{nginx_log_dir}}"
+    owner: nginx
+    group: nginx
+    mode: 0755
+    state: directory
+
+- name: Nginx | Make sure the sites-available, sites-enabled and conf.d directories exist
+  file:
+    path: "{{nginx_dir}}/{{item}}"
+    owner: nginx
+    group: nginx
+    mode: 0755
+    state: directory
+  with_items: ["sites-available", "sites-enabled", "conf.d"]

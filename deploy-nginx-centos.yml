@@ -1,0 +1,17 @@
+- hosts: all
+  vars_files:
+    - 'defaults/main.yml'
+  tasks:
+    - name: install the dependencies
+      yum:
+        name: "{{item}}"
+        state: present
+      with_items: ["perl", "libdb-devel", "make", "automake", "gcc", "gcc-c++", "kernel-devel" ]
+    - include: 'tasks/main.yml'
+
+  handlers:
+    - name: restart monit
+      service:
+        name: monit
+        state: restarted
+    - include: 'handlers/main.yml'

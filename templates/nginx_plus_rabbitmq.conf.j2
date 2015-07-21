@@ -1,0 +1,14 @@
+# default configuration for Nginx Plus proxy to RabbitMQ
+
+upstream rabbitmq {
+    zone rabbitmq 64k;
+    server 127.0.0.1:5672;
+}
+
+server {
+
+    listen 7000;
+    status_zone rabbitmq;
+    proxy_pass rabbitmq;
+
+}

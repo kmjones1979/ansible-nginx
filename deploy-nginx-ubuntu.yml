@@ -1,0 +1,20 @@
+- hosts: all
+  vars_files:
+    - 'defaults/main.yml'  
+  tasks:
+    - name: install the dependencies
+      apt:
+        pkg: "{{item}}"
+        state: present
+      with_items: ["perl", "libperl-dev", "monit", "build-essential"]
+    - include: 'tasks/main.yml'
+
+  handlers:
+    - name: restart monit
+      service:
+        name: monit
+        state: restarted
+    - include: 'handlers/main.yml'
+    - name: restart rabbitmq
+      service: name=rabbitmq-server state=restarted
+      when: rabbitmq_install == "yes" 

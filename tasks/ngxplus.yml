@@ -1,0 +1,7 @@
+# use specific include to install Nginx Plus depending on os version
+
+- include: ngxplus_centos_install.yml
+  when: destination_host_os == "centos"
+- include: ngxplus_ubuntu_install.yml
+  when: destination_host_os == "ubuntu"
+

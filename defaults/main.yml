@@ -1,0 +1,285 @@
+# file: nginx/defaults/main.yml
+
+nginx_install_method: "plus"
+nginx_source_version: "1.7.1" # source compile option is not supported with Nginx Plus
+
+destination_host_os: "ubuntu"
+destination_host_os_version: "14.04"
+
+# this is a preconfigured nginx.conf and default.conf to run a pre-configured nginx-plus load balancer configuration
+ngx_plus_lb_template: "yes"
+
+# install basic rabbitmq server to test tcp load balancing
+rabbitmq_install: "yes"
+rabbitmq_version: "3.5.3-1"
+
+nginx_user: nginx
+nginx_group: nginx
+nginx_uid: 33
+nginx_gid: 33
+
+nginx_dir: "/etc/nginx"
+nginx_www_dir: "/usr/share/nginx/html"
+nginx_log_dir: "/var/log/nginx"
+nginx_pid: "/var/run/nginx.pid"
+
+
+# nginx.conf
+nginx_worker_processes: "auto"
+nginx_daemon_disable: null
+nginx_worker_rlimit_nofile: null
+nginx_error_log_options: null
+nginx_error_log_level: null
+nginx_error_log_filename: 'error.log'
+nginx_worker_connections: 1024
+nginx_multi_accept: null
+nginx_tcp_nodelay: null
+nginx_tcp_nopush: null
+nginx_event: null
+nginx_charset: null
+nginx_disable_access_log: null
+nginx_server_tokens: null
+nginx_sendfile: 'on'
+nginx_keepalive: "on"
+nginx_keepalive_timeout: "65"
+nginx_client_body_timeout: null
+nginx_client_header_timeout: null
+nginx_send_timeout: null
+nginx_buffers: "on"
+nginx_client_body_buffer_size: null
+nginx_client_header_buffer_size: null
+nginx_client_max_body_size: null
+nginx_large_client_header_buffers: null
+nginx_server_names_hash_bucket_size: null
+nginx_types_hash_max_size: null
+nginx_types_hash_bucket_size: null
+nginx_proxy_read_timeout: null
+nginx_enable_rate_limiting: null
+nginx_rate_limiting_zone_name: "default"
+nginx_rate_limiting_backoff: "10m"
+nginx_rate_limit: "1r/s"
+nginx_access_logs:
+  - name: "main"
+    format: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"'
+    options: null
+    filename: "access.log"
+
+# default site
+nginx_default_root: "{{nginx_www_dir}}"
+nginx_default_enable: null
+
+# site inventory
+nginx_sites: []
+nginx_enabled_sites: []
+nginx_disabled_sites: []
+
+# source
+nginx_source_url: "http://nginx.org/download/nginx-{{nginx_source_version}}.tar.gz"
+nginx_source_prefix: "/usr/local/nginx/nginx-{{nginx_source_version}}"
+nginx_source_conf_path: "{{nginx_dir}}/nginx.conf"
+nginx_source_sbin_path: "{{nginx_source_prefix}}/sbin/nginx"
+nginx_source_default_configure_flags: "--prefix={{nginx_source_prefix}} --conf-path={{nginx_source_conf_path}} --sbin-path={{nginx_source_sbin_path}}"
+
+nginx_source_modules_included:
+  http_stub_status_module: "--with-http_stub_status_module"
+  http_ssl_module: "--with-http_ssl_module"
+  openssl: "--with-openssl=/tmp/openssl-{{ openssl_version }}"
+  http_gzip_static_module: "--with-http_gzip_static_module"
+  upload_progress_module: "--add-module=/tmp/nginx-upload-progress-module-{{nginx_upload_progress_version}}"
+  headers_more_module: "--add-module=/tmp/headers-more-nginx-module-{{nginx_headers_more_version}}"
+  http_auth_request_module: "--add-module=/tmp/ngx_http_auth_request_module-{{nginx_auth_request_release}}"
+  http_echo_module: "--add-module=/tmp/echo-nginx-module-{{nginx_echo_version}}"
+  google_perftools_module: "--with-google_perftools_module"
+  ipv6_module: "--with-ipv6"
+  http_real_ip_module: "--with-http_realip_module"
+  http_spdy_module: "--with-http_spdy_module"
+  http_perl_module: "--with-http_perl_module"
+  naxsi_module: "--add-module=/tmp/naxsi-{{nginx_naxsi_version}}/naxsi_src"
+  ngx_pagespeed: "--add-module=/tmp/ngx_pagespeed-release-{{nginx_ngx_pagespeed_version}}-beta"
+
+nginx_source_modules_excluded:
+  - mail_pop3_module
+  - mail_imap_module
+  - mail_smtp_module
+
+nginx_source_configure_flags: "{{nginx_source_default_configure_flags}}{% for key, value in nginx_source_modules_included.items() %} {{value}}{% endfor %}{% for item in nginx_source_modules_excluded %} --without-{{item}}{% endfor %}"
+
+
+# gzip_module
+nginx_gzip: null
+nginx_gzip_http_version: 1.1
+nginx_gzip_comp_level: 2
+nginx_gzip_proxied: expired no-cache no-store private auth
+nginx_gzip_vary: 'on'
+nginx_gzip_buffers: null
+nginx_gzip_min_length: 10240
+nginx_gzip_types:
+  - text/plain
+  - text/css
+  - text/xml
+  - text/csv
+  - text/javascript
+  - application/x-javascript
+  - application/xml
+  - application/xml+rss
+  - application/javascript
+  - application/postscript
+  - application/pdf
+  - application/ecmascript
+  - application/json
+  - image/svg+xml
+nginx_gzip_disable: "MSIE [1-6]\\."
+
+
+# http_stub_status_module configuration
+nginx_remote_ip_var: "remote_addr"
+nginx_authorized_ips:
+  - "127.0.0.1/32"
+
+# http_gzip_static_module configuration
+nginx_gzip_static: null
+
+
+# upload_progress_module configuration
+nginx_upload_progress_version: "0.9.0"
+nginx_upload_progress_javascript_output: yes
+nginx_upload_progress_zone_name: "proxied"
+nginx_upload_progress_zone_size: "1m"
+nginx_upload_progress_url: "https://github.com/masterzen/nginx-upload-progress-module/archive/v{{nginx_upload_progress_version}}.tar.gz"
+
+
+# headers_more_module configuration
+nginx_headers_more_version: "0.25"
+nginx_headers_more_url: "https://github.com/agentzh/headers-more-nginx-module/archive/v{{nginx_headers_more_version}}.tar.gz"
+
+
+# http_auth_request_module configuration
+nginx_auth_request_release: "662785733552"
+nginx_auth_request_url: "http://mdounin.ru/hg/ngx_http_auth_request_module/archive/{{nginx_auth_request_release}}.tar.gz"
+
+
+# http_echo_module configuration
+nginx_echo_version: "0.51"
+nginx_echo_url: "https://github.com/agentzh/echo-nginx-module/archive/v{{nginx_echo_version}}.tar.gz"
+
+
+# http_realip_module configuration
+nginx_realip_header: "X-Forwarded-For"
+nginx_realip_addresses: ["127.0.0.1"]
+nginx_realip_real_ip_recursive: "off"
+
+
+# naxsi_module configuration
+nginx_naxsi_version: "0.52"
+nginx_naxsi_url: "https://github.com/nbs-system/naxsi/archive/{{nginx_naxsi_version}}.tar.gz"
+
+# ngx_pagespeed_module configuration
+nginx_ngx_pagespeed_version: 1.9.32.3
+
+# OpenSSL configuration
+openssl_version: "1.0.2d"
+
+
+# Nginx Plus variables... this area defines the variables for an example nginx plus load balancer configuration
+
+# variables for defining an example health check configuration in nginx.conf
+
+nginx_plus_health_check_name: "health_chk"
+nginx_plus_health_check_reverse_check: null
+nginx_plus_health_status_match: "200"
+nginx_plus_health_header_content: "text/html"
+nginx_plus_health_regex: "~"
+nginx_plus_health_body_match: "Welcome to nginx!"
+
+# variables for defining an example upstream with advanced configuration options in nginx.conf
+
+nginx_plus_upstream_name: "backend"
+nginx_plus_upstream_resolver: null
+nginx_plus_upstream_resolver_valid: null
+nginx_plus_upstream_resolver_enable_ipv6: null
+nginx_plus_upstream_resolver_timeout: null
+nginx_plus_upstream_lb_method: "least_time"
+nginx_plus_upstream_least_time_check: "last_byte"
+nginx_plus_upstream_hash_consistent: null
+nginx_plus_upstream_zone: "upstream"
+nginx_plus_upstream_zone_size: "64k"
+nginx_plus_upstream_server1: "45.55.16.75:80"
+nginx_plus_upstream_server1_role: null
+nginx_plus_upstream_server1_max_conns: null
+nginx_plus_upstream_server1_max_fails: null
+nginx_plus_upstream_server1_max_fails_timeout: null
+nginx_plus_upstream_server1_weight: null
+nginx_plus_upstream_server1_force_resolve: null
+nginx_plus_upstream_server2: "45.55.30.4:80"
+nginx_plus_upstream_server2_role: null
+nginx_plus_upstream_server2_max_conns: null
+nginx_plus_upstream_server2_max_fails: null
+nginx_plus_upstream_server2_max_fails_timeout: null
+nginx_plus_upstream_server2_weight: null
+nginx_plus_upstream_server2_force_resolve: null
+nginx_plus_upstream_conn_queue: null
+nginx_plus_upstream_conn_queue_timeout: null
+nginx_plus_upstream_keepalive: null
+nginx_plus_upstream_keepalive_num: null
+nginx_plus_upstream_keepalive_single: null
+
+# variavles for defining upstream persistence configurations if needed
+
+nginx_plus_upstream_enable_cookie: null
+nginx_plus_upstream_cookie_name: null
+nginx_plus_upstream_cookie_expires: null
+nginx_plus_upstream_cookie_domain: null
+nginx_plus_upstream_cookie_path: null
+nginx_plus_upstream_sticky_http_only: null
+nginx_plus_upstream_sticky_secure: null
+nginx_plus_upstream_sticky_route: null
+nginx_plus_upstream_sticky_learn: null
+nginx_plus_upstream_sticky_learn_create: null
+nginx_plus_upstream_sticky_learn_lookup: null
+nginx_plus_upstream_sticky_learn_zone: null
+nginx_plus_upstream_sticky_learn_timeout: null
+
+# default global proxy cache configurations
+
+nginx_plus_global_proxy_cache_path: "/tmp/cache"
+nginx_plus_global_proxy_cache_keys_zone: "mycache:10m"
+nginx_plus_global_proxy_cache_inactive: "60m"
+
+# default server block proxy cache configurations
+# variables for defining some server blocks within the conf.d/default.conf configuration
+
+# status server block which will serve the status dashboard
+
+nginx_plus_status_block_enabled: "yes"
+nginx_plus_status_sb_listen_port: "9000"
+nginx_plus_status_sb_status_zone: "status_dashboard"
+nginx_plus_status_sb_root: "/usr/share/nginx/html"
+nginx_plus_status_sb_location: "/status.html"
+nginx_plus_status_sb_status_json: "yes"
+nginx_plus_status_sb_status_allow: null
+nginx_plus_status_sb_status_deny: null
+
+# default server block which will server / with http content to the upstream defined above
+
+nginx_plus_default_sb_listen_port: "80"
+nginx_plus_default_sb_status_zone: "upstream_zone1"
+nginx_plus_default_sb_server_name: "localhost"
+nginx_plus_default_sb_location: "/"
+nginx_plus_default_sb_set_host_header: "$host"
+nginx_plus_default_sb_set_real_ip: "$remote_addr"
+nginx_plus_default_sb_set_x_forwarded: "$proxy_add_x_forwarded_for"
+nginx_plus_default_sb_proxy_pass: "http://backend"
+nginx_plus_default_sb_proxy_cache: "mycache"
+nginx_plus_default_sb_health_check: "yes"
+nginx_plus_default_sb_health_interval: "10"
+nginx_plus_default_sb_health_fails: "3"
+nginx_plus_default_sb_health_passes: "2"
+nginx_plus_default_sb_health_match_uri: "/index.html"
+nginx_plus_default_sb_health_match_name: "health_chk"
+nginx_plus_default_sb_status_json: "yes"
+nginx_plus_default_sb_status_allow: null
+nginx_plus_default_sb_status_deny: null
+nginx_plus_default_sb_upstream_conf: "yes"
+nginx_plus_default_sb_upstream_allow: "45.55.8.217"
+nginx_plus_default_sb_upstream_deny: "all"
+

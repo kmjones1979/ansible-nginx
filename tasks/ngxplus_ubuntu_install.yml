@@ -1,0 +1,44 @@
+# nginx plus
+
+# IMPORTANT: 	all steps in this block require a valid trial or commercial license of the Nginx Plus product
+# 	      	along with a copy of the nginx repo certificate and public key provided by Nginx Inc
+#
+#		https://www.nginx.com/products/
+#		1-800-915-9122
+
+- name: Creating nginx ssl cert repo directory
+  file: path=/etc/ssl/nginx state=directory group=root mode=0700
+
+- name: Copy Nginx Plus repository certificate
+  copy: src=/etc/ssl/nginx/nginx-repo.crt dest=/etc/ssl/nginx/nginx-repo.crt owner=root group=root mode=0700
+
+- name: Copy Nginx Plus repository key
+  copy: src=/etc/ssl/nginx/nginx-repo.key dest=/etc/ssl/nginx/nginx-repo.key owner=root group=root mode=0700
+
+- name: Download Nginx CA certificate
+  get_url: url=https://cs.nginx.com/static/files/CA.crt dest=/etc/ssl/nginx/CA.crt mode=0700 validate_certs=no
+
+- apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
+
+- name: Download Apt-Get Nginx repository
+  get_url: url=https://cs.nginx.com/static/files/90nginx dest=/etc/apt/apt.conf.d/90nginx mode=0700 validate_certs=no
+
+- name: Install python-pycurl | Make sure the ansible required dependencies are installed
+  apt:
+    pkg: python-pycurl
+    state: present
+
+- shell: printf "deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" >/etc/apt/sources.list.d/nginx-plus.list
+
+- name: Update | Running apt-get update
+  apt: 
+    update_cache: yes
+
+- name: Nginx Plus | Make sure nginx plus is installed (package)
+  apt:
+    pkg: nginx-plus
+    state: latest
+  notify:
+    - restart nginx
+
+- include: directories.yml

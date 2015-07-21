@@ -1,0 +1,154 @@
+user  {{nginx_user}}{% if nginx_user != nginx_group%} {{nginx_group}}{% endif %};
+worker_processes  {{nginx_worker_processes}};
+{% if nginx_daemon_disable %}
+daemon off;
+{% endif %}
+{% if nginx_worker_rlimit_nofile %}
+worker_rlimit_nofile {{nginx_worker_rlimit_nofile}};
+{% endif %}
+
+error_log  {{nginx_log_dir}}/{{nginx_error_log_filename}} {% if nginx_error_log_options %}{{nginx_error_log_options}}{% endif %};
+pid        {{nginx_pid}};
+
+events {
+    worker_connections  {{nginx_worker_connections}};
+{% if nginx_multi_accept %}
+    multi_accept on;
+{% endif %}
+{% if nginx_event %}
+    use {{nginx_event}};
+{% endif %}
+}
+
+http {
+
+    match {{nginx_plus_health_check_name}} {
+	status {% if nginx_plus_health_check_reverse_check %}{{nginx_plus_health_check_reverse_check}} {% endif %}{{nginx_plus_health_status_match}};
+	header Content-Type = {{nginx_plus_health_header_content}};
+	body {{nginx_plus_health_regex}} "{{nginx_plus_health_body_match}}";
+    }
+
+    upstream {{nginx_plus_upstream_name}} {
+	{% if nginx_plus_upstream_resolver %}resolver {{nginx_plus_upstream_resolver}}{% if nginx_plus_upstream_resolver_valid %} valid={{nginx_plus_upstream_resolver_valid}}{% endif %}{% if nginx_plus_upstream_resolver_enable_ipv6 %} ipv6={{nginx_plus_upstream_resolver_enable_ipv6}}{% endif %};{% endif %}
+	{% if nginx_plus_upstream_resolver_timeout %}resolver_timeout {{nginx_plus_upstream_resolver_timeout}};{% endif %}
+
+	{% if nginx_plus_upstream_lb_method == "least_time" %}{{nginx_plus_upstream_lb_method}}{% if nginx_plus_upstream_least_time_check %} {{nginx_plus_upstream_least_time_check}}{% endif %};{% endif %}
+	{% if nginx_plus_upstream_lb_method == "hash" %}{{nginx_plus_upstream_lb_method}}{% if nginx_plus_upstream_least_time_check %}{{nginx_plus_upstream_least_time_check}}{% endif %};{% endif %}
+
+	{% if nginx_plus_upstream_zone %}zone {{nginx_plus_upstream_zone}}{% if nginx_plus_upstream_zone_size %} {{nginx_plus_upstream_zone_size}}{% endif %};{% endif %}
+
+	server {{nginx_plus_upstream_server1}}{% if nginx_plus_upstream_server1_role %} {{nginx_plus_upstream_server1_role}}{% endif %}{% if nginx_plus_upstream_server1_max_conns %} max_conns={{nginx_plus_upstream_server1_max_conns}}{% endif %}{% if nginx_plus_upstream_server1_max_fails %} max_fails={{nginx_plus_upstream_server1_max_fails}}{% endif %}{% if nginx_plus_upstream_server1_max_fails_timeout %} fail_timeout={{nginx_plus_upstream_server1_max_fails_timeout}}{% endif %}{% if nginx_plus_upstream_server1_weight %} weight={{nginx_plus_upstream_server1_weight}}{% endif %}{% if nginx_plus_upstream_server1_force_resolve == "yes" %} resolve{% endif %};
+	server {{nginx_plus_upstream_server2}}{% if nginx_plus_upstream_server2_role %} {{nginx_plus_upstream_server2_role}}{% endif %}{% if nginx_plus_upstream_server2_max_conns %} max_conns={{nginx_plus_upstream_server2_max_conns}}{% endif %}{% if nginx_plus_upstream_server2_max_fails %} max_fails={{nginx_plus_upstream_server2_max_fails}}{% endif %}{% if nginx_plus_upstream_server2_max_fails_timeout %} fail_timeout={{nginx_plus_upstream_server2_max_fails_timeout}}{% endif %}{% if nginx_plus_upstream_server2_weight %} weight={{nginx_plus_upstream_server2_weight}}{% endif %}{% if nginx_plus_upstream_server2_force_resolve == "yes" %} resolve{% endif %};
+
+	{% if nginx_plus_upstream_conn_queue %}queue {{nginx_plus_upstream_conn_queue}}{% if nginx_plus_upstream_conn_queue_timeout %} timeout={{nginx_plus_upstream_conn_queue_timeout}}{% endif %};{% endif %}
+
+	{% if nginx_plus_upstream_keepalive %}keepalive{% if nginx_plus_upstream_keepalive_num %} {{nginx_plus_upstream_keepalive_num}}{% endif %}{% if nginx_plus_upstream_keepalive_single %} single{% endif %};{% endif %}
+
+	{% if nginx_plus_upstream_enable_cookie == "yes" %}sticky cookie {{nginx_plus_upstream_cookie_name}}{% if nginx_plus_upstream_cookie_expires %} expires={{nginx_plus_upstream_cookie_expires}}{% endif %}{% if nginx_plus_upstream_cookie_domain %} domain={{nginx_plus_upstream_cookie_domain}}{% endif %}{% if nginx_plus_upstream_cookie_path %} path={{nginx_plus_upstream_cookie_path}}{% endif %}{% if nginx_plus_upstream_sticky_http_only %} httponly{% endif %}{% if nginx_plus_upstream_sticky_secure %} secure{% endif %};{% endif %}
+	{% if nginx_plus_upstream_sticky_route == "yes" %}sticky route $route_cookie $route_uri;{% endif %}
+	{% if nginx_plus_upstream_sticky_learn == "yes" %}sticky learn{% endif %}
+	    {% if nginx_plus_upstream_sticky_learn_create %}create=$upstream_cookie_examplecookie{% endif %}
+	    {% if nginx_plus_upstream_sticky_learn_lookup %}lookup=$cookie_examplecookie{% endif %}
+	    {% if nginx_plus_upstream_sticky_learn_zone %}zone={{nginx_plus_upstream_sticky_learn_zone}}{% endif %}
+	    {% if nginx_plus_upstream_sticky_learn_timeout %}timeout={{nginx_plus_upstream_sticky_learn_timeout}};{% endif %}
+
+    }
+
+    {% if nginx_plus_global_proxy_cache_path %}proxy_cache_path {{nginx_plus_global_proxy_cache_path}}{% if nginx_plus_global_proxy_cache_keys_zone %} keys_zone={{nginx_plus_global_proxy_cache_keys_zone}}{% endif %}{% if nginx_plus_global_proxy_cache_inactive %} inactive={{nginx_plus_global_proxy_cache_inactive}}{% endif %};{% endif %}
+
+
+    include       {{nginx_dir}}/mime.types;
+    default_type  application/octet-stream;
+
+{% if nginx_charset %}
+    charset {{nginx_charset}};
+{% endif %}
+
+{% if nginx_disable_access_log %}
+    access_log    off;
+{% else %}
+{% for log in nginx_access_logs %}
+    log_format  {{log['name']}}  '{{log['format']}}' {% if nginx_error_log_level %}{{nginx_error_log_level}}{% endif %};
+    access_log    {{nginx_log_dir}}/{{log['filename']}} {{log['name']}}{% if log['options'] %} {{log['options']}}{% endif %};
+{% endfor %}
+{% endif %}
+{% if nginx_server_tokens %}
+    server_tokens {{nginx_server_tokens}};
+{% endif %}
+
+{% if nginx_sendfile %}
+    sendfile {{nginx_sendfile}};
+{% endif %}
+{% if nginx_tcp_nopush %}    
+    tcp_nopush {{nginx_tcp_nopush}};
+{% endif %}
+{% if nginx_tcp_nodelay %}
+    tcp_nodelay {{nginx_tcp_nodelay}};
+{% endif %}
+
+{% if nginx_keepalive %}
+    keepalive_timeout  {{nginx_keepalive_timeout}};
+{% endif %}
+{% if nginx_client_body_timeout %}
+    client_body_timeout  {{nginx_client_body_timeout}};
+{% endif %}
+{% if nginx_client_header_timeout %}
+    client_header_timeout  {{nginx_client_header_timeout}};
+{% endif %}
+{% if nginx_send_timeout %}
+    send_timeout  {{nginx_send_timeout}};
+{% endif %}
+
+{% if nginx_gzip %}
+    gzip  {{nginx_gzip}};
+{% endif %}
+{% if nginx_gzip == 'on' %}
+    gzip_http_version {{nginx_gzip_http_version}};
+    gzip_comp_level {{nginx_gzip_comp_level}};
+    gzip_proxied {{nginx_gzip_proxied}};
+    gzip_vary {{nginx_gzip_vary}};
+{% if nginx_gzip_buffers %}
+    gzip_buffers {{nginx_gzip_buffers}};
+{% endif %}
+    gzip_types {{nginx_gzip_types|join(' ')}};
+    gzip_min_length {{nginx_gzip_min_length}};
+    gzip_disable     "{{nginx_gzip_disable}}";
+{% endif %}
+
+{% if nginx_client_body_buffer_size %}
+    client_body_buffer_size  {{nginx_client_body_buffer_size}};
+{% endif %}
+{% if nginx_client_header_buffer_size %}
+    client_header_buffer_size  {{nginx_client_header_buffer_size}};
+{% endif %}
+{% if nginx_client_max_body_size %}
+    client_max_body_size  {{nginx_client_max_body_size}};
+{% endif %}
+{% if nginx_large_client_header_buffers %}
+    large_client_header_buffers  {{nginx_large_client_header_buffers}};
+{% endif %}
+
+{% if nginx_server_names_hash_bucket_size %}
+    server_names_hash_bucket_size {{nginx_server_names_hash_bucket_size}};
+{% endif %}
+{% if nginx_types_hash_max_size %}
+    types_hash_max_size {{nginx_types_hash_max_size}};
+{% endif %}
+{% if nginx_types_hash_bucket_size %}
+    types_hash_bucket_size {{nginx_types_hash_bucket_size}};
+{% endif %}
+{% if nginx_proxy_read_timeout %}
+    proxy_read_timeout {{nginx_proxy_read_timeout}};
+{% endif %}
+
+{% if nginx_enable_rate_limiting %}
+    limit_req_zone $binary_remote_addr zone={{nginx_rate_limiting_zone_name}}:{{nginx_rate_limiting_backoff}} rate={{nginx_rate_limit}};
+{% endif %}
+
+    include {{nginx_dir}}/conf.d/*.conf;
+}
+
+stream {
+
+    include /etc/nginx/stream.d/*.conf;
+}

@@ -1,0 +1,80 @@
+{% if nginx_plus_status_block_enabled == "yes" %}
+server {
+    listen {{nginx_plus_status_sb_listen_port}};
+    {% if nginx_plus_status_sb_status_zone %}status_zone {{nginx_plus_status_sb_status_zone}};{% endif %}
+
+    root {{nginx_plus_status_sb_root}};
+
+    location = {{nginx_plus_status_sb_location}} { }
+
+    # Everything beginning with /status (except for /status.html) is
+    # processed by the status handler
+{% if nginx_plus_status_sb_status_json == "yes" %}
+    location /status {
+        {% if nginx_plus_status_sb_status_allow %}allow {{nginx_plus_status_sb_status_allow}};{% endif %}
+	{% if nginx_plus_status_sb_status_deny %}deny {{nginx_plus_status_sb_status_deny}};{% endif %}
+
+        status;
+   }
+{% endif %}
+}
+{% endif %}
+
+server {
+
+    listen {{nginx_plus_default_sb_listen_port}} default_server;
+    {% if nginx_plus_default_sb_status_zone %}status_zone {{nginx_plus_default_sb_status_zone}};{% endif %}
+
+    {% if nginx_plus_default_sb_server_name %}server_name  {{nginx_plus_default_sb_server_name}};{% endif %}
+
+    location {{nginx_plus_default_sb_location}} {
+
+        {% if nginx_plus_default_sb_set_host_header %}proxy_set_header Host               {{nginx_plus_default_sb_set_host_header}};{% endif %}
+
+        {% if nginx_plus_default_sb_set_real_ip %}proxy_set_header X-Real-IP          {{nginx_plus_default_sb_set_real_ip}};{% endif %}
+
+        {% if nginx_plus_default_sb_set_x_forwarded %}proxy_set_header X-Forwarded-For    {{nginx_plus_default_sb_set_x_forwarded}};{% endif %}
+
+        {% if nginx_plus_default_sb_proxy_pass%}proxy_pass {{nginx_plus_default_sb_proxy_pass}};{% endif %}
+
+	{% if nginx_plus_default_sb_health_check == "yes" %}
+
+        health_check interval={{nginx_plus_default_sb_health_interval}} fails={{nginx_plus_default_sb_health_fails}} passes={{nginx_plus_default_sb_health_passes}};
+        health_check uri={{nginx_plus_default_sb_health_match_uri}};
+        health_check match={{nginx_plus_default_sb_health_match_name}};
+
+	{% endif %}
+
+    }
+    
+    {% if nginx_plus_default_sb_status_json == "yes" %}
+
+    location /status {
+        {% if nginx_plus_default_sb_status_allow %}allow {{nginx_plus_default_sb_status_allow}}; # permit access from local network{% endif %}
+        {% if nginx_plus_default_sb_status_deny %}deny {{nginx_plus_default_sb_status_deny}}; # deny access from everywhere else{% endif %}
+
+        status;
+    }
+
+    {% endif %}
+
+    {% if nginx_plus_default_sb_upstream_conf == "yes" %}
+
+    location /upstream_conf {
+
+        upstream_conf;
+
+        {% if nginx_plus_default_sb_upstream_allow %}allow {{nginx_plus_default_sb_upstream_allow}}; # permit access from local network {% endif %}
+
+        {% if nginx_plus_default_sb_upstream_deny %}deny {{nginx_plus_default_sb_upstream_deny}}; # deny access from everywhere else{% endif %}
+
+    
+    }
+    {% endif %}
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+}
