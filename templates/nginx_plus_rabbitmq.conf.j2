@@ -1,14 +1,16 @@
 # default configuration for Nginx Plus proxy to RabbitMQ
 
-upstream rabbitmq {
-    zone rabbitmq 64k;
-    server 127.0.0.1:5672;
+{% if nginx_plus_default_tcp_block_enabled %}
+upstream {{nginx_plus_default_tcp_upstream_name}} {
+    {% if nginx_plus_default_tcp_zone_name %}zone {{nginx_plus_default_tcp_zone_name}} {{nginx_plus_default_tcp_zone_size}};{% endif %}
+    server {{nginx_plus_default_tcp_server1}};
 }
 
 server {
 
-    listen 7000;
-    status_zone rabbitmq;
-    proxy_pass rabbitmq;
+    listen {{nginx_plus_default_tcp_listen_port}};
+    {% if nginx_plus_default_tcp_status_zone %}status_zone {{nginx_plus_default_tcp_status_zone}};{% endif %}
+    proxy_pass {{nginx_plus_default_tcp_proxy_pass}};
 
 }
+{% endif %}

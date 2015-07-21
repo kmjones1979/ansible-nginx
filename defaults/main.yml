@@ -7,10 +7,11 @@ destination_host_os: "ubuntu"
 destination_host_os_version: "14.04"
 
 # this is a preconfigured nginx.conf and default.conf to run a pre-configured nginx-plus load balancer configuration
+# IMPORTANT: Must be set to "yes" or "no"
 ngx_plus_lb_template: "yes"
 
 # install basic rabbitmq server to test tcp load balancing
-rabbitmq_install: "yes"
+rabbitmq_install: "no"
 rabbitmq_version: "3.5.3-1"
 
 nginx_user: nginx
@@ -193,7 +194,7 @@ nginx_plus_health_body_match: "Welcome to nginx!"
 
 # variables for defining an example upstream with advanced configuration options in nginx.conf
 
-nginx_plus_upstream_name: "backend"
+nginx_plus_upstream_name: "backend_80"
 nginx_plus_upstream_resolver: null
 nginx_plus_upstream_resolver_valid: null
 nginx_plus_upstream_resolver_enable_ipv6: null
@@ -201,16 +202,16 @@ nginx_plus_upstream_resolver_timeout: null
 nginx_plus_upstream_lb_method: "least_time"
 nginx_plus_upstream_least_time_check: "last_byte"
 nginx_plus_upstream_hash_consistent: null
-nginx_plus_upstream_zone: "upstream"
+nginx_plus_upstream_zone: "backend"
 nginx_plus_upstream_zone_size: "64k"
-nginx_plus_upstream_server1: "45.55.16.75:80"
+nginx_plus_upstream_server1: "45.55.30.4:80"
 nginx_plus_upstream_server1_role: null
 nginx_plus_upstream_server1_max_conns: null
 nginx_plus_upstream_server1_max_fails: null
 nginx_plus_upstream_server1_max_fails_timeout: null
 nginx_plus_upstream_server1_weight: null
 nginx_plus_upstream_server1_force_resolve: null
-nginx_plus_upstream_server2: "45.55.30.4:80"
+nginx_plus_upstream_server2: "45.55.16.75:80"
 nginx_plus_upstream_server2_role: null
 nginx_plus_upstream_server2_max_conns: null
 nginx_plus_upstream_server2_max_fails: null
@@ -268,7 +269,7 @@ nginx_plus_default_sb_location: "/"
 nginx_plus_default_sb_set_host_header: "$host"
 nginx_plus_default_sb_set_real_ip: "$remote_addr"
 nginx_plus_default_sb_set_x_forwarded: "$proxy_add_x_forwarded_for"
-nginx_plus_default_sb_proxy_pass: "http://backend"
+nginx_plus_default_sb_proxy_pass: "http://backend_80"
 nginx_plus_default_sb_proxy_cache: "mycache"
 nginx_plus_default_sb_health_check: "yes"
 nginx_plus_default_sb_health_interval: "10"
@@ -282,4 +283,14 @@ nginx_plus_default_sb_status_deny: null
 nginx_plus_default_sb_upstream_conf: "yes"
 nginx_plus_default_sb_upstream_allow: "45.55.8.217"
 nginx_plus_default_sb_upstream_deny: "all"
+
+# default tcp server block (rabbitmq)
+nginx_plus_default_tcp_block_enabled: "yes"
+nginx_plus_default_tcp_listen_port: "7000"
+nginx_plus_default_tcp_status_zone: "rabbitmq"
+nginx_plus_default_tcp_proxy_pass: "rabbitmq_7000"
+nginx_plus_default_tcp_upstream_name: "rabbitmq_7000"
+nginx_plus_default_tcp_zone_name: "rabbitmq"
+nginx_plus_default_tcp_zone_size: "64k"
+nginx_plus_default_tcp_server1: "127.0.0.1:5672"
 
