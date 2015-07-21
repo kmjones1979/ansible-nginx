@@ -6,7 +6,7 @@
   when: nginx_install_method == "source"
 - include: ngxplus.yml
   when: nginx_install_method == "plus"
-- include: scripts.yml
+#- include: scripts.yml
 - include: configure.yml
 - include: default_site.yml
-#- include: sites.yml
+- include: sites.yml

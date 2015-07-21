@@ -1,6 +1,6 @@
-# nginx/tasks/configure.yml
+# configure.yml
 
-- name: Nginx | Make sure the mime.types file is up to date
+- name: Nginx | Updating mime.types file
   copy:
     src: mime.types
     dest: "{{nginx_dir}}/mime.types"
@@ -8,25 +8,50 @@
     group: root
     mode: 0644
 
-- name: Nginx | Check for existence of Nginx configuration
+- name: Nginx | Checking for an existing nginx.conf file
   stat:
     path: "{{nginx_dir}}/nginx.conf"
   register: nginx_config
 
-- name: Nginx | Make sure the Nginx configuration is updated
+- name: Nginx | Updating the nginx.conf file
   template:
     src: nginx.conf.j2
     dest: "{{nginx_dir}}/nginx.conf"
     owner: root
     group: root
     mode: 0644
+    when: ngx_plus_lb_template == "no"
   notify:
     - restart nginx
 
-  include: nginx_plus_template.yml 
-  when: ngx_plus_lb_template == "yes"
+- name: Nginx Plus | Updating the nginx.conf file from template
+  template:
+    src: nginx_plus_nginx.conf.j2
+    dest: "{{nginx_dir}}/nginx.conf"
+    owner: root
+    group: root
+    mode: 0644
+    when: ngx_plus_lb_template == "yes"
+  notify:
+    - restart nginx
 
-- name: Nginx | Start Nginx the first time
+- name: Nginx Plus | Updating the conf.d/default.conf file from template
+  template:
+    src: nginx_plus_default.conf.j2
+    dest: "{{nginx_dir}}/conf.d/default.conf"
+    owner: root
+    group: root
+    mode: 0644
+    when: ngx_plus_lb_template == "yes"
+  notify:
+    - restart nginx:
+
+# rabbit mq install used to demo tcp upstream withing Nginx Plus
+
+- include: rabbitmq.yml
+  when: rabbitmq_install == "yes"
+
+- name: Nginx | Starting Nginx for the first time
   service:
     name: nginx
     state: started
