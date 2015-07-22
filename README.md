@@ -14,7 +14,7 @@ https://www.nginx.com/#contact-us
 
 For instructions on installing ansible please visit http://docs.ansible.com/intro_installation.html#getting-ansible
 
-This build depends on the following roles: ANXS.apt, ANXS.build-essential, ANXS.perl, ANXS.monit (if you want monit protection)
+This build depends on the following roles: ANXS.apt, ANXS.build-essential, ANXS.perl
 
 To install these using ansible-galaxy perform the following commands
 
@@ -22,7 +22,6 @@ To install these using ansible-galaxy perform the following commands
 sudo ansible-galaxy install ANXS.apt
 sudo ansible-galaxy install ANXS.build-essential
 sudo ansible-galaxy install ANXS.perl
-sudo ansible-galaxy install ANXS.monit
 ```
 
 ##### Platforms

@@ -11,7 +11,7 @@ destination_host_os_version: "14.04"
 ngx_plus_lb_template: "yes"
 
 # install basic rabbitmq server to test tcp load balancing
-rabbitmq_install: "no"
+rabbitmq_install: "yes"
 rabbitmq_version: "3.5.3-1"
 
 nginx_user: nginx
