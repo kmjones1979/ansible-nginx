@@ -243,8 +243,12 @@ nginx_plus_upstream_sticky_learn_timeout: null
 # default global proxy cache configurations
 
 nginx_plus_global_proxy_cache_path: "/tmp/cache"
+nginx_plus_global_proxy_cache_path_name: "mycache"
 nginx_plus_global_proxy_cache_keys_zone: "mycache:10m"
 nginx_plus_global_proxy_cache_inactive: "60m"
+nginx_plus_global_map_proxy_cache_purge_enabled: "yes"
+nginx_plus_global_map_proxy_cache_purge: "1"
+nginx_plus_global_map_proxy_cache_default: "0"
 
 # default server block proxy cache configurations
 # variables for defining some server blocks within the conf.d/default.conf configuration

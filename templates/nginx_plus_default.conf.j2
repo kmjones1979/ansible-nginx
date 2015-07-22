@@ -37,6 +37,10 @@ server {
 
         {% if nginx_plus_default_sb_proxy_pass%}proxy_pass {{nginx_plus_default_sb_proxy_pass}};{% endif %}
 
+	{% if nginx_plus_global_proxy_cache_path_name %}proxy_cache {{nginx_plus_global_proxy_cache_path_name}};{% endif %}
+
+	{% if nginx_plus_global_map_proxy_cache_purge_enabled == "yes" %}proxy_cache_purge $purge_method;{% endif %}
+
 	{% if nginx_plus_default_sb_health_check == "yes" %}
 
         health_check interval={{nginx_plus_default_sb_health_interval}} fails={{nginx_plus_default_sb_health_fails}} passes={{nginx_plus_default_sb_health_passes}};
