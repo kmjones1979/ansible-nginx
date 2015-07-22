@@ -1,3 +1,22 @@
+
+server {
+
+    listen 8000;
+    server_name localhost;
+    #status_zone nginx-plus_backend;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+
+    }
+
+    location /status {
+        status;
+    }
+}
+
+
 {% if nginx_plus_status_block_enabled == "yes" %}
 server {
     listen {{nginx_plus_status_sb_listen_port}};
