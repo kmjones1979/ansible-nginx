@@ -1,20 +1,26 @@
-
+{% if nginx_plus_default_example_enabled == "yes" %}
 server {
 
-    listen 8000;
-    server_name localhost;
-    #status_zone nginx-plus_backend;
+    {% if nginx_plus_default_example_listen_port %}listen {{nginx_plus_default_example_listen_port}};{% endif %}
+    {% if nginx_plus_default_server_name %}server_name {{nginx_plus_default_server_name}};{% endif %}
+    {% if nginx_plus_default_status_zone %}status_zone {{nginx_plus_default_status_zone}};{% endif %}
 
-    location / {
-        root /usr/share/nginx/html;
-        index index.html index.htm;
+    location {{nginx_plus_default_location_path}} {
+        {% if nginx_plus_default_root_path %}root {{nginx_plus_default_root_path}};{% endif %}
+        {% if nginx_plus_default_index_types %}index {{nginx_plus_default_index_types}};{% endif %}
 
     }
 
+    {% if nginx_plus_default_status_json == "yes" %}
     location /status {
         status;
+	{% if nginx_plus_default_status_allow %}allow {{nginx_plus_default_status_allow}};{% endif %}
+	{% if nginx_plus_default_status_deny %}deny {{nginx_plus_default_status_deny}};{% endif %}
     }
+    {% endif %}
+
 }
+{% endif %}
 
 
 {% if nginx_plus_status_block_enabled == "yes" %}
@@ -28,14 +34,14 @@ server {
 
     # Everything beginning with /status (except for /status.html) is
     # processed by the status handler
-{% if nginx_plus_status_sb_status_json == "yes" %}
+    {% if nginx_plus_status_sb_status_json == "yes" %}
     location /status {
         {% if nginx_plus_status_sb_status_allow %}allow {{nginx_plus_status_sb_status_allow}};{% endif %}
 	{% if nginx_plus_status_sb_status_deny %}deny {{nginx_plus_status_sb_status_deny}};{% endif %}
 
         status;
-   }
-{% endif %}
+    }
+    {% endif %}
 }
 {% endif %}
 

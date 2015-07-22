@@ -192,6 +192,19 @@ nginx_plus_health_header_content: "text/html"
 nginx_plus_health_regex: "~"
 nginx_plus_health_body_match: "Welcome to nginx!"
 
+# variables for defining an example listen directive for running a backend nginx server
+
+nginx_plus_default_example_enabled: "yes"
+nginx_plus_default_example_listen_port: "8000"
+nginx_plus_default_server_name: "localhost"
+nginx_plus_default_status_zone: null
+nginx_plus_default_location_path: "/"
+nginx_plus_default_root_path: "/usr/share/nginx/html"
+nginx_plus_default_index_types: "index.html index.htm"
+nginx_plus_default_status_json: "yes"
+nginx_plus_default_status_allow: null
+nginx_plus_default_status_deny: null
+
 # variables for defining an example upstream with advanced configuration options in nginx.conf
 
 nginx_plus_upstream_name: "nginx-plus_80"
