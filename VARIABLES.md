@@ -2,31 +2,31 @@
 
 #### - global nginx / nginx plus variables -
 
-nginx_install_method: 				- method to install "package", "source" or "plus"
-nginx_source_version: 				- version to compile of Nginx F/OSS 
-						  note: Nginx Plus cannot be compiled and must be installed from a system repository
+ - nginx_install_method: 				- method to install "package", "source" or "plus"
+ - nginx_source_version: 				- version to compile of Nginx F/OSS 
+ 						  	note: Nginx Plus cannot be compiled and must be installed from a system repository
+ 
+ - destination_host_os: 				- destination operating system that nginx will be deployed to ("ubuntu" or "centos")
+ 						  	currently only ubunutu method working, centos is planned 
+ - destination_host_os_version: 			- operating system version
+ 
+ - nginx_plus_default_site: 				- whether or not to enable the nginx plus default site template ("yes" or "no")
+ - nginx_default_site:					- whether or not to enable the nginx default site template ("yes" or "no")
+ 
+ - rabbitmq_install:					- whether or not to install rabbitmq for testing tcp load balancing ("yes" or "no") 
+ - rabbitmq_version:					- which version of rabbitmq to install
+ 
+ - nginx_user:						- user account which nginx should run
+ - nginx_group:						- group for which the user nginx should be a member of
+ - nginx_uid:						- default uid used during account creation
+ - nginx_gid:						- default gid used during group creation
 
-destination_host_os: 				- destination operating system that nginx will be deployed to ("ubuntu" or "centos")
-						  currently only ubunutu method working, centos is planned 
-destination_host_os_version: 			- operating system version
-
-nginx_plus_default_site: 			- whether or not to enable the nginx plus default site template ("yes" or "no")
-nginx_default_site:				- whether or not to enable the nginx default site template ("yes" or "no")
-
-rabbitmq_install:				- whether or not to install rabbitmq for testing tcp load balancing ("yes" or "no") 
-rabbitmq_version:				- which version of rabbitmq to install
-
-nginx_user:					- user account which nginx should run
-nginx_group:					- group for which the user nginx should be a member of
-nginx_uid:					- default uid used during account creation
-nginx_gid:					- default gid used during group creation
-
-nginx_dir:					- nginx install directory
-nginx_www_dir:					- default nginx web content directory
-nginx_log_dir:					- default nginx log directory
-nginx_pid:					- default location of nginx pid file
-nginx_default_root:				- nginx default web root directory for default site
-
+ - nginx_dir:						- nginx install directory
+ - nginx_www_dir:					- default nginx web content directory
+ - nginx_log_dir:					- default nginx log directory
+ - nginx_pid:						- default location of nginx pid file
+ - nginx_default_root:					- nginx default web root directory for default site
+ - 
 #### - nginx.conf variables -
 
 nginx_worker_processes:				- default number of worker_process spawned with nginx ("auto" reccommended)
