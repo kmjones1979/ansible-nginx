@@ -1,0 +1,19 @@
+- name: Nginx | Updating the nginx.conf file
+  template:
+    src: nginx.conf.j2
+    dest: "{{nginx_dir}}/nginx.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart nginx
+
+- name: Nginx Plus | Updating the conf.d/default.conf file from template
+  template:
+    src: default.site.j2
+    dest: "{{nginx_dir}}/conf.d/default.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart nginx

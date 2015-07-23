@@ -22,31 +22,6 @@
     mode: 0644
   when: not nginx_default_index.stat.exists
 
-- name: Nginx | Updating the default site configuration
-  template:
-    src: default.site.j2
-    dest: "{{nginx_dir}}/sites-available/default"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Nginx | Enabling the default site
-  file:
-    path: "{{nginx_dir}}/sites-enabled/default"
-    src: "{{nginx_dir}}/sites-available/default"
-    state: link
-  when: nginx_default_enable
-  notify:
-    - reload nginx
-
-- name: Nginx | Disabling the default site
-  file:
-    path: "{{nginx_dir}}/sites-enabled/default"
-    state: absent
-  when: not nginx_default_enable
-  notify:
-    - reload nginx
-
 - name: Nginx | Reload if we just created index.html
   service:
     name: nginx

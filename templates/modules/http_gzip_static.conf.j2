@@ -1,1 +1,1 @@
-gzip_static {{nginx_gzip_static}};
+{% if nginx_gzip_static %} gzip_static {{nginx_gzip_static}};{% endif %}

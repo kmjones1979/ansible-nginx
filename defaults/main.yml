@@ -1,29 +1,34 @@
 # file: nginx/defaults/main.yml
 
-nginx_install_method: "plus"
-nginx_source_version: "1.7.1" # source compile option is not supported with Nginx Plus
+nginx_install_method: "source"
+nginx_source_version: "1.9.3" # source compile option is not supported with Nginx Plus
 
 destination_host_os: "ubuntu"
 destination_host_os_version: "14.04"
 
-# this is a preconfigured nginx.conf and default.conf to run a pre-configured nginx-plus load balancer configuration
-# IMPORTANT: Must be set to "yes" or "no"
-ngx_plus_lb_template: "yes"
+# default site for Nginx Plus - preconfigured template for enhanced features
+nginx_plus_default_site: "no"
 
-# install basic rabbitmq server to test tcp load balancing
-rabbitmq_install: "yes"
-rabbitmq_version: "3.5.3-1"
+# default site for Nginx F/OSS 
+nginx_default_site: "yes"
 
+# install basic rabbitmq server to test tcp load balancing with Nginx Plus
+rabbitmq_install: "no"
+rabbitmq_version: "3.5.4-1"
+
+# user accounts for nginx
 nginx_user: nginx
 nginx_group: nginx
-nginx_uid: 33
-nginx_gid: 33
+nginx_uid: 77
+nginx_gid: 77
+
+# remove www-data group and user account if it exists?
 
 nginx_dir: "/etc/nginx"
 nginx_www_dir: "/usr/share/nginx/html"
 nginx_log_dir: "/var/log/nginx"
 nginx_pid: "/var/run/nginx.pid"
-
+nginx_default_root: "{{nginx_www_dir}}"
 
 # nginx.conf
 nginx_worker_processes: "auto"
@@ -64,10 +69,6 @@ nginx_access_logs:
     format: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"'
     options: null
     filename: "access.log"
-
-# default site
-nginx_default_root: "{{nginx_www_dir}}"
-nginx_default_enable: null
 
 # site inventory
 nginx_sites: []

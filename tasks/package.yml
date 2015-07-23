@@ -16,4 +16,21 @@
   notify:
     - restart nginx
 
+- name: Nginx | Stopping Nginx so that we can setup nginx user and remove default www-data user
+  service:
+    name: nginx
+    state: stopped
+
+- name: Nginx | removing www-data user if it exists
+  user:
+    name: "www-data"
+    state: absent
+    remove: yes
+
+- name: Nginx | removing www-data group if it exists
+  group:
+    name: "www-data"
+    state: absent
+
+- include: user.yml
 - include: directories.yml

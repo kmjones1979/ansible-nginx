@@ -1,5 +1,16 @@
 # file: nginx/tasks/source.yml
 
+- name: Nginx | removing www-data user if it exists
+  user:
+    name: "www-data"
+    state: absent
+    remove: yes
+
+- name: Nginx | removing www-data group if it exists
+  group:
+    name: "www-data"
+    state: absent
+
 - include: user.yml
 - include: directories.yml
 

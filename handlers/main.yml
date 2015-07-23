@@ -8,3 +8,8 @@
 - name: reload nginx
   service: name=nginx state=reloaded
   sudo: yes
+
+- name: stop nginx
+  service: name=nginx state=stopped
+  sudo: yes
+

@@ -15,20 +15,15 @@
     path: "{{nginx_dir}}/nginx.conf"
   register: nginx_config
 
-- name: Nginx | Updating the nginx.conf file
-  template:
-    src: nginx.conf.j2
-    dest: "{{nginx_dir}}/nginx.conf"
-    owner: root
-    group: root
-    mode: 0644
-  notify:
-    - restart nginx
+# Nginx plus template updates when default site is requested
+#
+- include: configure_nginx.yml
+  when: nginx_default_site == "yes"
 
 # Nginx Plus update used when nginx plus template is requested
 
 - include: configure_plus.yml
-  when: ngx_plus_lb_template == "yes"
+  when: nginx_plus_default_site == "yes"
 
 # rabbit mq install used to demo tcp upstream withing Nginx Plus
 
